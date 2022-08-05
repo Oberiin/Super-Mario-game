@@ -1,4 +1,4 @@
-var simpleLevelPlan = [
+let simpleLevelPlan = [
   "                      ",
   "                      ",
   "  x              = x  ",
@@ -16,11 +16,11 @@ function Level(plan) {
   this.grid = [];
   this.actors = [];
 
-  for (var y = 0; y < this.height; y++) {
-    var line = plan[y], gridLine = [];
-    for (var x = 0; x < this.width; x++) {
-      var ch = line[x], fieldType = null;
-      var Actor = actorChars[ch];
+  for (let y = 0; y < this.height; y++) {
+    let line = plan[y], gridLine = [];
+    for (let x = 0; x < this.width; x++) {
+      let ch = line[x], fieldType = null;
+      let Actor = actorChars[ch];
       if (Actor)
         this.actors.push(new Actor(new Vector(x, y), ch));
       else if (ch == "x")
@@ -52,7 +52,7 @@ Vector.prototype.times = function(factor) {
   return new Vector(this.x * factor, this.y * factor);
 };
 
-var actorChars = {
+let actorChars = {
   "@": Player,
   "o": Coin,
   "=": Lava, "|": Lava, "v": Lava
@@ -86,10 +86,10 @@ function Coin(pos) {
 }
 Coin.prototype.type = "coin";
 
-var simpleLevel = new Level(simpleLevelPlan);
+let simpleLevel = new Level(simpleLevelPlan);
 
 function elt(name, className) {
-  var elt = document.createElement(name);
+  let elt = document.createElement(name);
   if (className) elt.className = className;
   return elt;
 }
@@ -103,13 +103,13 @@ function DOMDisplay(parent, level) {
   this.drawFrame();
 }
 
-var scale = 20;
+let scale = 20;
 
 DOMDisplay.prototype.drawBackground = function() {
-  var table = elt("table", "background");
+  let table = elt("table", "background");
   table.style.width = this.level.width * scale + "px";
   this.level.grid.forEach(function(row) {
-    var rowElt = table.appendChild(elt("tr"));
+    let rowElt = table.appendChild(elt("tr"));
     rowElt.style.height = scale + "px";
     row.forEach(function(type) {
       rowElt.appendChild(elt("td", type));
@@ -119,9 +119,9 @@ DOMDisplay.prototype.drawBackground = function() {
 };
 
 DOMDisplay.prototype.drawActors = function() {
-  var wrap = elt("div");
+  let wrap = elt("div");
   this.level.actors.forEach(function(actor) {
-    var rect = wrap.appendChild(elt("div",
+    let rect = wrap.appendChild(elt("div",
                                     "actor " + actor.type));
     rect.style.width = actor.size.x * scale + "px";
     rect.style.height = actor.size.y * scale + "px";
@@ -140,16 +140,16 @@ DOMDisplay.prototype.drawFrame = function() {
 };
 
 DOMDisplay.prototype.scrollPlayerIntoView = function() {
-  var width = this.wrap.clientWidth;
-  var height = this.wrap.clientHeight;
-  var margin = width / 3;
+  let width = this.wrap.clientWidth;
+  let height = this.wrap.clientHeight;
+  let margin = width / 3;
 
   // The viewport
-  var left = this.wrap.scrollLeft, right = left + width;
-  var top = this.wrap.scrollTop, bottom = top + height;
+  let left = this.wrap.scrollLeft, right = left + width;
+  let top = this.wrap.scrollTop, bottom = top + height;
 
-  var player = this.level.player;
-  var center = player.pos.plus(player.size.times(0.5))
+  let player = this.level.player;
+  let center = player.pos.plus(player.size.times(0.5))
                  .times(scale);
 
   if (center.x < left + margin)
@@ -167,26 +167,26 @@ DOMDisplay.prototype.clear = function() {
 };
 
 Level.prototype.obstacleAt = function(pos, size) {
-  var xStart = Math.floor(pos.x);
-  var xEnd = Math.ceil(pos.x + size.x);
-  var yStart = Math.floor(pos.y);
-  var yEnd = Math.ceil(pos.y + size.y);
+  let xStart = Math.floor(pos.x);
+  let xEnd = Math.ceil(pos.x + size.x);
+  let yStart = Math.floor(pos.y);
+  let yEnd = Math.ceil(pos.y + size.y);
 
   if (xStart < 0 || xEnd > this.width || yStart < 0)
     return "wall";
   if (yEnd > this.height)
     return "lava";
-  for (var y = yStart; y < yEnd; y++) {
-    for (var x = xStart; x < xEnd; x++) {
-      var fieldType = this.grid[y][x];
+  for (let y = yStart; y < yEnd; y++) {
+    for (let x = xStart; x < xEnd; x++) {
+      let fieldType = this.grid[y][x];
       if (fieldType) return fieldType;
     }
   }
 };
 
 Level.prototype.actorAt = function(actor) {
-  for (var i = 0; i < this.actors.length; i++) {
-    var other = this.actors[i];
+  for (let i = 0; i < this.actors.length; i++) {
+    let other = this.actors[i];
     if (other != actor &&
         actor.pos.x + actor.size.x > other.pos.x &&
         actor.pos.x < other.pos.x + other.size.x &&
@@ -196,14 +196,14 @@ Level.prototype.actorAt = function(actor) {
   }
 };
 
-var maxStep = 0.05;
+let maxStep = 0.05;
 
 Level.prototype.animate = function(step, keys) {
   if (this.status != null)
     this.finishDelay -= step;
 
   while (step > 0) {
-    var thisStep = Math.min(step, maxStep);
+    let thisStep = Math.min(step, maxStep);
     this.actors.forEach(function(actor) {
       actor.act(thisStep, this, keys);
     }, this);
@@ -212,7 +212,7 @@ Level.prototype.animate = function(step, keys) {
 };
 
 Lava.prototype.act = function(step, level) {
-  var newPos = this.pos.plus(this.speed.times(step));
+  let newPos = this.pos.plus(this.speed.times(step));
   if (!level.obstacleAt(newPos, this.size))
     this.pos = newPos;
   else if (this.repeatPos)
@@ -221,38 +221,38 @@ Lava.prototype.act = function(step, level) {
     this.speed = this.speed.times(-1);
 };
 
-var wobbleSpeed = 8, wobbleDist = 0.07;
+let wobbleSpeed = 8, wobbleDist = 0.07;
 
 Coin.prototype.act = function(step) {
   this.wobble += step * wobbleSpeed;
-  var wobblePos = Math.sin(this.wobble) * wobbleDist;
+  let wobblePos = Math.sin(this.wobble) * wobbleDist;
   this.pos = this.basePos.plus(new Vector(0, wobblePos));
 };
 
-var playerXSpeed = 7;
+let playerXSpeed = 7;
 
 Player.prototype.moveX = function(step, level, keys) {
   this.speed.x = 0;
   if (keys.left) this.speed.x -= playerXSpeed;
   if (keys.right) this.speed.x += playerXSpeed;
 
-  var motion = new Vector(this.speed.x * step, 0);
-  var newPos = this.pos.plus(motion);
-  var obstacle = level.obstacleAt(newPos, this.size);
+  let motion = new Vector(this.speed.x * step, 0);
+  let newPos = this.pos.plus(motion);
+  let obstacle = level.obstacleAt(newPos, this.size);
   if (obstacle)
     level.playerTouched(obstacle);
   else
     this.pos = newPos;
 };
 
-var gravity = 30;
-var jumpSpeed = 17;
+let gravity = 30;
+let jumpSpeed = 17;
 
 Player.prototype.moveY = function(step, level, keys) {
   this.speed.y += step * gravity;
-  var motion = new Vector(0, this.speed.y * step);
-  var newPos = this.pos.plus(motion);
-  var obstacle = level.obstacleAt(newPos, this.size);
+  let motion = new Vector(0, this.speed.y * step);
+  let newPos = this.pos.plus(motion);
+  let obstacle = level.obstacleAt(newPos, this.size);
   if (obstacle) {
     level.playerTouched(obstacle);
     if (keys.up && this.speed.y > 0)
@@ -268,7 +268,7 @@ Player.prototype.act = function(step, level, keys) {
   this.moveX(step, level, keys);
   this.moveY(step, level, keys);
 
-  var otherActor = level.actorAt(this);
+  let otherActor = level.actorAt(this);
   if (otherActor)
     level.playerTouched(otherActor.type, otherActor);
 
@@ -296,13 +296,13 @@ Level.prototype.playerTouched = function(type, actor) {
   }
 };
 
-var arrowCodes = {37: "left", 38: "up", 39: "right"};
+let arrowCodes = {37: "left", 38: "up", 39: "right"};
 
 function trackKeys(codes) {
-  var pressed = Object.create(null);
+  let pressed = Object.create(null);
   function handler(event) {
     if (codes.hasOwnProperty(event.keyCode)) {
-      var down = event.type == "keydown";
+      let down = event.type == "keydown";
       pressed[codes[event.keyCode]] = down;
       event.preventDefault();
     }
@@ -313,11 +313,11 @@ function trackKeys(codes) {
 }
 
 function runAnimation(frameFunc) {
-  var lastTime = null;
+  let lastTime = null;
   function frame(time) {
-    var stop = false;
+    let stop = false;
     if (lastTime != null) {
-      var timeStep = Math.min(time - lastTime, 100) / 1000;
+      let timeStep = Math.min(time - lastTime, 100) / 1000;
       stop = frameFunc(timeStep) === false;
     }
     lastTime = time;
@@ -327,11 +327,11 @@ function runAnimation(frameFunc) {
   requestAnimationFrame(frame);
 }
 
-var arrows = trackKeys(arrowCodes);
+let arrows = trackKeys(arrowCodes);
 
 function runLevel(level, Display, andThen) {
-  var display = new Display(document.body, level);
-  var running = "yes";
+  let display = new Display(document.body, level);
+  let running = "yes";
   function handleKey(event) {
     if (event.keyCode == 27) {
       if (running == "no") {
@@ -345,7 +345,7 @@ function runLevel(level, Display, andThen) {
     }
   }
   addEventListener("keydown", handleKey);
-  var arrows = trackKeys(arrowCodes);
+  let arrows = trackKeys(arrowCodes);
 
   function animation(step) {
     if (running == "pausing") {
@@ -369,10 +369,10 @@ function runLevel(level, Display, andThen) {
 }
 
 function trackKeys(codes) {
-  var pressed = Object.create(null);
+  let pressed = Object.create(null);
   function handler(event) {
     if (codes.hasOwnProperty(event.keyCode)) {
-      var state = event.type == "keydown";
+      let state = event.type == "keydown";
       pressed[codes[event.keyCode]] = state;
       event.preventDefault();
     }
